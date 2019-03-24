@@ -7,12 +7,13 @@ dnl
 dnl Original version Dug Song <dugsong@monkey.org>
 
 AC_PREREQ(2.59c)
-AC_INIT(event.c)
+AC_INIT(libevent,2.0.18-stable)
+AC_CONFIG_SRCDIR(event.c)
 
 AC_CONFIG_MACRO_DIR([m4])
 
-AM_INIT_AUTOMAKE(libevent,2.0.18-stable)
-dnl Enable silent Automake rules if present                                                                           
+AM_INIT_AUTOMAKE
+dnl Enable silent Automake rules if present
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 AM_CONFIG_HEADER(config.h)
 AC_DEFINE(NUMERIC_VERSION, 0x02001200, [Numeric representation of the version])

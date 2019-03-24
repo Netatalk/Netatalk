@@ -1,13 +1,18 @@
 dnl configure.ac for netatalk
 
-AC_INIT(etc/afpd/main.c)
+AC_INIT([netatalk],[m4_esyscmd(cat VERSION)])
+AC_CONFIG_SRCDIR([etc/afpd/main.c])
 
 NETATALK_VERSION=`cat $srcdir/VERSION`
 AC_SUBST(NETATALK_VERSION)
 
-AC_CANONICAL_SYSTEM
-AM_INIT_AUTOMAKE(netatalk, ${NETATALK_VERSION})
-AM_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_MACRO_DIR([macros])
+AC_CONFIG_AUX_DIR([build-aux])
+
+AC_CANONICAL_HOST
+
+AM_INIT_AUTOMAKE
 AM_MAINTAINER_MODE([enable])
 
 dnl Checks for programs.
@@ -46,7 +51,7 @@ AC_CHECK_HEADERS(netdb.h sgtty.h statfs.h dlfcn.h langinfo.h locale.h)
 AC_CHECK_HEADERS(sys/param.h sys/fcntl.h sys/termios.h)
 AC_CHECK_HEADERS(sys/mnttab.h sys/statvfs.h sys/stat.h sys/vfs.h)
 dnl Checks for header files, confirmed to be required as of 2011
-AC_CHECK_HEADERS([sys/mount.h], , , 
+AC_CHECK_HEADERS([sys/mount.h], , ,
 [#ifdef HAVE_SYS_PARAM_H
 #include <sys/param.h>
 #endif
@@ -56,7 +61,7 @@ AC_CHECK_TYPES([fshare_t], [], [], [[#include <fcntl.h>]])
 AC_SYS_LARGEFILE([], AC_MSG_ERROR([AFP 3.x support requires Large File Support.]))
 
 dnl --------------------------------------------------------------------------
-dnl check if dlsym needs to add an underscore, uses libtool macros 
+dnl check if dlsym needs to add an underscore, uses libtool macros
 dnl --------------------------------------------------------------------------
 AC_LTDL_DLLIB
 AC_CHECK_FUNCS(dlopen dlsym dlclose)
@@ -109,7 +114,7 @@ AC_NETATALK_CRACKLIB
 dnl Check whether to enable debug code
 AC_NETATALK_DEBUG
 
-dnl Check whethe to disable tickle SIGALARM stuff, which eases debugging
+dnl Check whether to disable tickle SIGALARM stuff, which eases debugging
 AC_NETATALK_DEBUGGING
 
 dnl	Check for libiconv support
@@ -132,7 +137,7 @@ AC_NETATALK_PATH_PAM
 
 dnl Check for optional shadow password support
 AC_NETATALK_SHADOW
-	
+
 dnl Check for optional valid-shell-check support
 AC_NETATALK_SHELL_CHECK
 
@@ -233,95 +238,101 @@ AM_CONDITIONAL(USE_BDB, test x$bdb_required = xyes)
 AM_CONDITIONAL(HAVE_ATFUNCS, test x"$ac_neta_haveatfuncs" = x"yes")
 AM_CONDITIONAL(USE_SHADOWPW, test x$shadowpw = xyes)
 
-dnl Enable silent Automake rules if present                                                                           
+dnl Enable silent Automake rules if present
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 dnl --------------------- generate files
-AC_OUTPUT([Makefile
-	bin/Makefile
-	bin/ad/Makefile
-	bin/afppasswd/Makefile
-	bin/cnid/Makefile
-	bin/cnid/cnid2_create
-	bin/megatron/Makefile
-	bin/misc/Makefile
-	config/Makefile
-	config/pam/Makefile
-	contrib/Makefile
-	contrib/macusers/Makefile
-	contrib/macusers/macusers
-	contrib/shell_utils/Makefile
-	contrib/shell_utils/apple_dump
-	contrib/shell_utils/asip-status.pl
-	distrib/Makefile
-	distrib/config/Makefile
-	distrib/config/netatalk-config
-	distrib/initscripts/Makefile
-	distrib/m4/Makefile
-	doc/Makefile
-    doc/html.xsl
-    doc/man.xsl
-    doc/manual/Makefile
-    doc/manual/manual.xml
-    doc/manpages/Makefile
-    doc/manpages/man1/Makefile
-    doc/manpages/man5/Makefile
-    doc/manpages/man8/Makefile
-	etc/Makefile
-	etc/afpd/Makefile
-	etc/cnid_dbd/Makefile
-	etc/netatalk/Makefile
-	etc/spotlight/Makefile
-	etc/uams/Makefile
-	include/Makefile
-	include/atalk/Makefile
-	libatalk/Makefile
-	libatalk/acl/Makefile
-	libatalk/adouble/Makefile
-	libatalk/bstring/Makefile
-	libatalk/cnid/Makefile
-	libatalk/cnid/cdb/Makefile
-	libatalk/cnid/last/Makefile
-	libatalk/cnid/dbd/Makefile
-	libatalk/cnid/tdb/Makefile
-	libatalk/cnid/mysql/Makefile
-	libatalk/compat/Makefile
-	libatalk/dsi/Makefile
-	libatalk/iniparser/Makefile
-	libatalk/talloc/Makefile
-	libatalk/tdb/Makefile
-	libatalk/unicode/Makefile
-	libatalk/unicode/charsets/Makefile
-	libatalk/util/Makefile
-	libatalk/vfs/Makefile
-	macros/Makefile
-	man/Makefile
-	man/man1/Makefile
-    man/man1/ad.1
-    man/man1/afpldaptest.1
-    man/man1/afppasswd.1
-    man/man1/afpstats.1
-    man/man1/apple_dump.1
-    man/man1/asip-status.pl.1
-    man/man1/dbd.1
-    man/man1/macusers.1
-    man/man1/netatalk-config.1
-    man/man1/uniconv.1
-	man/man5/Makefile
-    man/man5/afp.conf.5
-    man/man5/afp_signature.conf.5
-    man/man5/afp_voluuid.conf.5
-    man/man5/extmap.conf.5
-	man/man8/Makefile
-    man/man8/afpd.8
-    man/man8/cnid_dbd.8
-    man/man8/cnid_metad.8
-    man/man8/netatalk.8
-	test/Makefile
-	test/afpd/Makefile
-	],
-	[chmod a+x distrib/config/netatalk-config contrib/shell_utils/apple_*]
+AC_CONFIG_FILES([
+  Makefile
+  bin/Makefile
+  bin/ad/Makefile
+  bin/afppasswd/Makefile
+  bin/cnid/Makefile
+  bin/cnid/cnid2_create
+  bin/megatron/Makefile
+  bin/misc/Makefile
+  config/Makefile
+  config/pam/Makefile
+  contrib/Makefile
+  contrib/macusers/Makefile
+  contrib/macusers/macusers
+  contrib/shell_utils/Makefile
+  contrib/shell_utils/apple_dump
+  contrib/shell_utils/asip-status.pl
+  distrib/Makefile
+  distrib/config/Makefile
+  distrib/config/netatalk-config
+  distrib/initscripts/Makefile
+  distrib/m4/Makefile
+  doc/Makefile
+  doc/html.xsl
+  doc/man.xsl
+  doc/manual/Makefile
+  doc/manual/manual.xml
+  doc/manpages/Makefile
+  doc/manpages/man1/Makefile
+  doc/manpages/man5/Makefile
+  doc/manpages/man8/Makefile
+  etc/Makefile
+  etc/afpd/Makefile
+  etc/cnid_dbd/Makefile
+  etc/netatalk/Makefile
+  etc/spotlight/Makefile
+  etc/uams/Makefile
+  include/Makefile
+  include/atalk/Makefile
+  libatalk/Makefile
+  libatalk/acl/Makefile
+  libatalk/adouble/Makefile
+  libatalk/bstring/Makefile
+  libatalk/cnid/Makefile
+  libatalk/cnid/cdb/Makefile
+  libatalk/cnid/last/Makefile
+  libatalk/cnid/dbd/Makefile
+  libatalk/cnid/tdb/Makefile
+  libatalk/cnid/mysql/Makefile
+  libatalk/compat/Makefile
+  libatalk/dsi/Makefile
+  libatalk/iniparser/Makefile
+  libatalk/talloc/Makefile
+  libatalk/tdb/Makefile
+  libatalk/unicode/Makefile
+  libatalk/unicode/charsets/Makefile
+  libatalk/util/Makefile
+  libatalk/vfs/Makefile
+  macros/Makefile
+  man/Makefile
+  man/man1/Makefile
+  man/man1/ad.1
+  man/man1/afpldaptest.1
+  man/man1/afppasswd.1
+  man/man1/afpstats.1
+  man/man1/apple_dump.1
+  man/man1/asip-status.pl.1
+  man/man1/dbd.1
+  man/man1/macusers.1
+  man/man1/netatalk-config.1
+  man/man1/uniconv.1
+  man/man5/Makefile
+  man/man5/afp.conf.5
+  man/man5/afp_signature.conf.5
+  man/man5/afp_voluuid.conf.5
+  man/man5/extmap.conf.5
+  man/man8/Makefile
+  man/man8/afpd.8
+  man/man8/cnid_dbd.8
+  man/man8/cnid_metad.8
+  man/man8/netatalk.8
+  test/Makefile
+  test/afpd/Makefile
+])
+
+AC_CONFIG_COMMANDS([default],
+  [chmod a+x distrib/config/netatalk-config contrib/shell_utils/apple_*],
+  []
 )
+
+AC_OUTPUT
 
 AC_NETATALK_LIBS_SUMMARY
 AC_NETATALK_CONFIG_SUMMARY
